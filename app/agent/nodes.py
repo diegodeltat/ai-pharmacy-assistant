@@ -11,16 +11,44 @@ from app.tools.rag_tool import answer_medication_question
 
 
 def classify_node(state: AgentState) -> AgentState:
+
     question = state["question"]
     intent = classify_intent(question)
     previous_intent = state.get("last_intent", "")
     commune = extract_commune(question)
     rag_query = question
+    pharmacy_followup_markers = (
+        "dirección",
+        "direccion",
+        "horario",
+        "teléfono",
+        "telefono",
+        "farmacia",
+        "local",
+        "esa",
+        "ese",
+        "cuál",
+        "cual",
+        "y cuál",
+        "y cual",
+    )
 
-    if intent == "general" and previous_intent in {"pharmacy", "mixed"} and commune:
+    if (
+        intent == "general"
+        and previous_intent in {"pharmacy", "mixed"}
+        and (
+            commune
+            or any(
+                marker in question.casefold()
+                for marker in pharmacy_followup_markers
+            )
+        )
+    ):
+
         intent = "pharmacy"
     elif intent == "general" and previous_intent in {"medication", "mixed"}:
         followup_markers = (
+
             "efectos",
             "contraindicaciones",
             "mecanismo",
@@ -32,12 +60,18 @@ def classify_node(state: AgentState) -> AgentState:
             intent = "medication"
             previous_question = state.get("last_medication_question", "")
             rag_query = f"{previous_question}\nSeguimiento: {question}".strip()
-
-    return {**state, "intent": intent, "rag_query": rag_query}
+    return {
+        **state,
+        "intent": intent,
+        "rag_query": rag_query,
+    }
 
 
 async def _pharmacy_result(state: AgentState) -> dict:
-    commune = extract_commune(state["question"])
+    commune = (
+        extract_commune(state["question"])
+        or state.get("last_commune", "")
+    )
     if not commune:
         return {
             "answer": (
