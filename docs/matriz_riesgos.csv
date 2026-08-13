@@ -1,0 +1,11 @@
+riesgo,probabilidad,impacto,mitigacion,dueno
+El asistente recomienda una dosis,Media,Crítico,Guardrail de entrada y salida más 20 pruebas adversarias en CI,Backend
+Dataset ficticio presentado como verdad clínica,Media,Crítico,Aviso visible prompt restrictivo y cita del corpus educativo,Producto
+API MINSAL no responde,Media,Alto,Timeout 5 s cache 15 min fallback fechado y mensaje digno,Backend
+MINSAL entrega registros antiguos,Media,Alto,Validación contra fecha de Chile y descarte de registros no vigentes,Backend
+Retrieval recupera una ficha irrelevante,Media,Alto,Top k 4 umbral configurable abstención y evaluación,IA
+NDC duplicado se usa como clave,Baja,Alto,Excluir NDC del contexto y usar UUID determinístico por medicamento,Datos
+Colección Qdrant incompatible,Baja,Alto,Colección versionada y verificación de 256 dimensiones,Backend
+Secretos expuestos,Baja,Crítico,Variables de entorno Render archivo .env ignorado y revisión previa al deploy,DevOps
+Memoria perdida al reiniciar,Alta,Medio,Documentar alcance y evaluar checkpointer persistente en una siguiente versión,Backend
+Frontend oculta fallback,Media,Alto,Mostrar obligatoriamente fuente y etiqueta en vivo o respaldo,Frontend
