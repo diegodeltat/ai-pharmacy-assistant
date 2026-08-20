@@ -1,3 +1,5 @@
+"""Definición del grafo conversacional."""
+
 from langgraph.graph import END, START, StateGraph
 
 from app.agent.nodes import (
@@ -9,14 +11,13 @@ from app.agent.nodes import (
     safety_node,
 )
 from app.agent.state import AgentState
-from app.memory.checkpointer import memory
 
 
 def route_by_intent(state: AgentState) -> str:
     return state["intent"]
 
 
-def build_graph():
+def build_graph(checkpointer):
     graph_builder = StateGraph(AgentState)
 
     graph_builder.add_node("classify", classify_node)
@@ -46,7 +47,4 @@ def build_graph():
     graph_builder.add_edge("safety", END)
     graph_builder.add_edge("general", END)
 
-    return graph_builder.compile(checkpointer=memory)
-
-
-graph = build_graph()
+    return graph_builder.compile(checkpointer=checkpointer)

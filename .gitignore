@@ -1,8 +1,10 @@
 .env
 .venv/
+.venv-old/
 .venv-win/
 __pycache__/
 *.py[cod]
 .pytest_cache/
 evaluation/evaluation_results.json
 .streamlit/secrets.toml
+data/memory/
