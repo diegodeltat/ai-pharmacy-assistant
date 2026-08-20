@@ -31,6 +31,10 @@ MEDICATION_WORDS = (
     "interacciones de",
     "mecanismo de accion",
     "clase farmacologica",
+    "farmaco",
+    "farmacos",
+    "medicina",
+    "dosis",
 )
 
 
