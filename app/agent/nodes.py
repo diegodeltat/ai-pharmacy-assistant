@@ -1,6 +1,7 @@
 """Nodos del grafo conversacional."""
 
 import asyncio
+import re
 
 from app.agent.router import classify_intent, extract_commune
 from app.agent.state import AgentState
@@ -66,12 +67,102 @@ def classify_node(state: AgentState) -> AgentState:
         "rag_query": rag_query,
     }
 
+def _closing_minutes(horario: str) -> int:
+    """Convierte la hora de cierre en minutos para poder comparar horarios."""
+    matches = re.findall(r"(\d{1,2}):(\d{2})", horario)
+
+    if len(matches) < 2:
+        return -1
+
+    hour, minute = map(int, matches[-1])
+    total = hour * 60 + minute
+
+    # Si el turno termina al día siguiente, se suma un día completo.
+    text = horario.casefold()
+    if "día siguiente" in text or "dia siguiente" in text:
+        total += 24 * 60
+
+    return total
+
+
+def _is_latest_closing_followup(question: str) -> bool:
+    text = question.casefold()
+
+    markers = (
+        "cierra más tarde",
+        "cierra mas tarde",
+        "cierra después",
+        "cierra despues",
+        "cuál cierra más tarde",
+        "cual cierra mas tarde",
+        "cuál cierra después",
+        "cual cierra despues",
+        "cuál de esas cierra",
+        "cual de esas cierra",
+    )
+
+    return any(marker in text for marker in markers)
+
+
+def _answer_latest_closing_pharmacy(
+    state: AgentState,
+) -> AgentState | None:
+    pharmacies = state.get("last_pharmacies", [])
+
+    if not pharmacies:
+        return None
+
+    if not _is_latest_closing_followup(state["question"]):
+        return None
+
+    valid_pharmacies = [
+        pharmacy
+        for pharmacy in pharmacies
+        if _closing_minutes(pharmacy.get("horario", "")) >= 0
+    ]
+
+    if not valid_pharmacies:
+        return {
+            **state,
+            "response": (
+                "No pude comparar los horarios de las farmacias encontradas "
+                "porque los datos no contienen horarios válidos."
+            ),
+            "safety_blocked": False,
+            "last_intent": "pharmacy",
+        }
+
+    pharmacy = max(
+        valid_pharmacies,
+        key=lambda item: _closing_minutes(item.get("horario", "")),
+    )
+
+    commune = state.get("last_commune", "")
+
+    response = (
+        f"De las farmacias encontradas para {commune}, "
+        f"la que cierra más tarde es {pharmacy['nombre']}, "
+        f"ubicada en {pharmacy['direccion']}. "
+        f"Su horario informado es {pharmacy['horario']}."
+    )
+
+    return {
+        **state,
+        "response": response,
+        "sources": state.get("sources", []),
+        "warnings": state.get("warnings", []),
+        "safety_blocked": False,
+        "last_intent": "pharmacy",
+        "last_commune": commune,
+    }
+
 
 async def _pharmacy_result(state: AgentState) -> dict:
     commune = (
         extract_commune(state["question"])
         or state.get("last_commune", "")
     )
+
     if not commune:
         return {
             "answer": (
@@ -82,18 +173,22 @@ async def _pharmacy_result(state: AgentState) -> dict:
             "sources": [],
             "warnings": [],
             "commune": "",
+            "pharmacies": [],
         }
 
     result = await find_pharmacies_by_commune(commune)
+
     if not result["success"] or not result["pharmacies"]:
         return {
             "answer": result["message"],
             "sources": [],
             "warnings": [],
             "commune": commune,
+            "pharmacies": [],
         }
 
     lines = [f"Farmacias de turno encontradas para {commune}:", ""]
+
     for pharmacy in result["pharmacies"]:
         lines.extend(
             [
@@ -105,6 +200,7 @@ async def _pharmacy_result(state: AgentState) -> dict:
                 "",
             ]
         )
+
     lines.append("Fuente: Ministerio de Salud de Chile (MINSAL).")
     lines.append(
         "MINSAL informa locales y turnos; no confirma stock, precio ni "
@@ -112,11 +208,13 @@ async def _pharmacy_result(state: AgentState) -> dict:
     )
 
     warnings = []
+
     if not result["live_data"]:
         warnings.append(
             "Se muestran datos de respaldo, no datos en vivo. "
             f"Captura: {result['captured_at']}."
         )
+
     source = SourceCitation(
         source_type="minsal",
         title=f"Farmacias de turno en {commune}",
@@ -125,16 +223,24 @@ async def _pharmacy_result(state: AgentState) -> dict:
         ),
         live_data=result["live_data"],
     ).model_dump()
+
     return {
         "answer": "\n".join(lines),
         "sources": [source],
         "warnings": warnings,
         "commune": commune,
+        "pharmacies": result["pharmacies"],
     }
 
 
 async def pharmacy_node(state: AgentState) -> AgentState:
+    followup_response = _answer_latest_closing_pharmacy(state)
+
+    if followup_response is not None:
+        return followup_response
+
     result = await _pharmacy_result(state)
+
     return {
         **state,
         "response": result["answer"],
@@ -143,6 +249,7 @@ async def pharmacy_node(state: AgentState) -> AgentState:
         "safety_blocked": False,
         "last_intent": "pharmacy",
         "last_commune": result["commune"],
+        "last_pharmacies": result["pharmacies"],
     }
 
 
@@ -178,6 +285,7 @@ async def mixed_node(state: AgentState) -> AgentState:
         "last_intent": "mixed",
         "last_commune": pharmacy_result["commune"],
         "last_medication_question": state["question"],
+        "last_pharmacies": pharmacy_result["pharmacies"],
     }
 
 

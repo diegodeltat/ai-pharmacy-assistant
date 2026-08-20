@@ -14,3 +14,4 @@ class AgentState(TypedDict, total=False):
     last_intent: str
     last_commune: str
     last_medication_question: str
+    last_pharmacies: list[dict]
