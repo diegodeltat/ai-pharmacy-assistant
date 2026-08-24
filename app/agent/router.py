@@ -37,6 +37,16 @@ MEDICATION_WORDS = (
     "dosis",
 )
 
+OUT_OF_SCOPE_COMMERCIAL_WORDS = (
+    "stock",
+    "precio",
+    "precios",
+    "costo",
+    "costos",
+    "disponibilidad del medicamento",
+    "disponibilidad de medicamento",
+)
+
 
 @lru_cache(maxsize=1)
 def known_drug_names() -> set[str]:
@@ -58,6 +68,10 @@ def classify_intent(question: str) -> str:
     if is_unsafe_request(question):
         return "safety"
     text = normalize_for_safety(question)
+    # Stock, precio y disponibilidad comercial no forman parte
+    # del alcance del asistente.
+    if any(word in text for word in OUT_OF_SCOPE_COMMERCIAL_WORDS):
+        return "general"
     pharmacy = any(word in text for word in PHARMACY_WORDS)
     medication = any(word in text for word in MEDICATION_WORDS) or any(
         re.search(rf"\b{re.escape(name)}\b", text)

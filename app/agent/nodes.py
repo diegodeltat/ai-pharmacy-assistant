@@ -301,13 +301,36 @@ def safety_node(state: AgentState) -> AgentState:
 
 
 def general_node(state: AgentState) -> AgentState:
-    return {
-        **state,
-        "response": (
+    question = state["question"].casefold()
+
+    commercial_scope_markers = (
+        "stock",
+        "precio",
+        "precios",
+        "costo",
+        "costos",
+        "disponibilidad del medicamento",
+        "disponibilidad de medicamento",
+    )
+
+    if any(marker in question for marker in commercial_scope_markers):
+        response = (
+            "No puedo confirmar stock, precio ni disponibilidad comercial "
+            "de medicamentos. MINSAL informa locales y turnos de farmacias, "
+            "pero no entrega esa información. Sí puedo ayudarte a encontrar "
+            "farmacias de turno o explicar información general de una ficha "
+            "educativa de medicamentos."
+        )
+    else:
+        response = (
             "Puedo buscar farmacias de turno con datos de MINSAL y explicar "
             "información general de fichas educativas de medicamentos con "
             "fuentes. No entrego diagnósticos, tratamientos ni dosis."
-        ),
+        )
+
+    return {
+        **state,
+        "response": response,
         "sources": [],
         "warnings": [],
         "safety_blocked": False,
