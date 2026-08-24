@@ -19,7 +19,10 @@
 - [x] Embeddings
 - [x] Base vectorial
 - [x] Retriever
-- [x] Abstención y fuentes (re-ranking diferido por costo)
+- [x] Abstención y fuentes
+- [x] Re-ranking opcional por request y CLI de evaluación
+- [x] Resolución de nombres y alias antes del retrieval
+- [x] Validación automática de citas y filtrado de fuentes
 
 ---
 
@@ -43,6 +46,8 @@
 ## Evaluación
 
 - [x] Casos de prueba
+- [x] Evaluación RAG de top 1, citas, abstención y aclaración
+- [x] Script reproducible de calibración
 - [ ] Medición de latencia en entorno desplegado
 - [ ] Calibración de retrieval con Qdrant real
 - [x] Seguridad y casos adversarios

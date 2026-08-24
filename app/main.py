@@ -47,6 +47,7 @@ def health_check() -> dict:
         "status": "ok",
         "service": "asistente-farmacias-ia",
         "rag_configured": settings.rag_configured,
+        "rag_rerank_enabled": settings.rag_rerank_enabled,
     }
 
 
@@ -56,12 +57,19 @@ async def chat(
     http_request: Request,
 ) -> ChatResponse:
 
+    settings = get_settings()
     initial_state: AgentState = {
         "user_id": request.user_id,
         "question": request.pregunta,
         "safety_blocked": False,
         "sources": [],
         "warnings": [],
+        "rerank_enabled": (
+            settings.rag_rerank_enabled
+            if request.rerank is None
+            else request.rerank
+        ),
+        "rerank_applied": False,
     }
 
     config = {
@@ -106,4 +114,6 @@ async def chat(
             else result.get("sources", [])
         ),
         warnings=warnings,
+        rerank_enabled=result.get("rerank_enabled", False),
+        rerank_applied=result.get("rerank_applied", False),
     )

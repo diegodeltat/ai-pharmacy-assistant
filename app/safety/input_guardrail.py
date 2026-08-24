@@ -50,8 +50,8 @@ def is_unsafe_request(question: str) -> bool:
         r"\b(aumentar|reducir|suspender|duplicar) (la )?dosis\b",
 
         # FRECUENCIA
-        r"\bcada cuantas? (horas|veces)\b",
-        r"\bcada cuantos? (horas|dias)\b",
+        r"\bcada cuantos? (minutos|horas|dias)\b",
+        r"\bcada cuantas? (minutos|horas|veces)\b",
         r"\bcuantas veces (al dia|por dia|debo|puedo)\b",
         r"\bcon que frecuencia\b.*\b(tomar|usar|administrar)\b",
 

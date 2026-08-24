@@ -255,7 +255,10 @@ async def pharmacy_node(state: AgentState) -> AgentState:
 
 async def medication_node(state: AgentState) -> AgentState:
     question = state.get("rag_query", state["question"])
-    result = await answer_medication_question(question)
+    result = await answer_medication_question(
+        question,
+        rerank_enabled=state.get("rerank_enabled", False),
+    )
     return {
         **state,
         "response": result["answer"],
@@ -264,13 +267,17 @@ async def medication_node(state: AgentState) -> AgentState:
         "safety_blocked": result.get("safety_blocked", False),
         "last_intent": "medication",
         "last_medication_question": question,
+        "rerank_applied": result.get("rerank_applied", False),
     }
 
 
 async def mixed_node(state: AgentState) -> AgentState:
     pharmacy_result, rag_result = await asyncio.gather(
         _pharmacy_result(state),
-        answer_medication_question(state.get("rag_query", state["question"])),
+        answer_medication_question(
+            state.get("rag_query", state["question"]),
+            rerank_enabled=state.get("rerank_enabled", False),
+        ),
     )
     response = (
         f"Farmacias de turno\n\n{pharmacy_result['answer']}\n\n"
@@ -286,6 +293,7 @@ async def mixed_node(state: AgentState) -> AgentState:
         "last_commune": pharmacy_result["commune"],
         "last_medication_question": state["question"],
         "last_pharmacies": pharmacy_result["pharmacies"],
+        "rerank_applied": rag_result.get("rerank_applied", False),
     }
 
 

@@ -10,6 +10,8 @@ class AgentState(TypedDict, total=False):
     sources: list[dict]
     warnings: list[str]
     rag_query: str
+    rerank_enabled: bool
+    rerank_applied: bool
 
     last_intent: str
     last_commune: str

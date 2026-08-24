@@ -15,6 +15,14 @@ class ChatRequest(BaseModel):
         description="Pregunta enviada al asistente.",
     )
 
+    rerank: bool | None = Field(
+        default=None,
+        description=(
+            "Activa o desactiva reranking para esta consulta. Si se omite, "
+            "usa RAG_RERANK_ENABLED."
+        ),
+    )
+
 
 class SourceCitation(BaseModel):
     source_type: Literal["minsal", "rag"]
@@ -31,6 +39,8 @@ class ChatResponse(BaseModel):
     safety_blocked: bool
     sources: list[SourceCitation] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    rerank_enabled: bool = False
+    rerank_applied: bool = False
 
 
 class PharmacyRecord(BaseModel):

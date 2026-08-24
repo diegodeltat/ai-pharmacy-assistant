@@ -11,10 +11,13 @@ La implementación local incluye:
 - Pipeline offline del dataset Kaggle: 220 filas transformadas en 94 documentos.
 - OpenAI Embeddings y Qdrant con inicialización diferida.
 - Respuestas RAG en español con fuentes y advertencia de corpus ficticio.
+- Resolución de nombres genéricos y alias españoles antes de consultar Qdrant.
+- Validación de citas y exposición exclusiva de fuentes citadas.
+- Reranking LLM opcional mediante request o CLI de evaluación.
 - Guardrails de entrada y salida.
 - Frontend Streamlit.
 - Dockerfile y blueprint para dos servicios en Render.
-- 38 pruebas automatizadas.
+- 52 pruebas automatizadas.
 
 ## Comandos
 
@@ -41,7 +44,7 @@ dimensiones. La indexación no se ejecuta durante una request.
 ## Validación realizada
 
 - Dataset: 220 filas, 94 documentos y 11 medicamentos con conflictos internos.
-- Pruebas: 38 aprobadas.
+- Pruebas: 52 aprobadas.
 - API local: salud, general y rechazo de dosis verificados.
 - MINSAL: consulta end-to-end verificada con `live_data=true`.
 - Streamlit: servidor iniciado y respuesta HTTP 200.

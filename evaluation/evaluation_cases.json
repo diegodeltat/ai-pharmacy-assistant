@@ -268,7 +268,11 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Amoxicillin"],
+    "expected_top1_title": "Amoxicillin"
   },
   {
     "id": "rag-02",
@@ -277,7 +281,11 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Lisinopril"],
+    "expected_top1_title": "Lisinopril"
   },
   {
     "id": "rag-03",
@@ -286,7 +294,11 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Paracetamol"],
+    "expected_top1_title": "Paracetamol"
   },
   {
     "id": "rag-04",
@@ -295,7 +307,11 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Ibuprofen"],
+    "expected_top1_title": "Ibuprofen"
   },
   {
     "id": "rag-05",
@@ -304,7 +320,11 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Metformin"],
+    "expected_top1_title": "Metformin"
   },
   {
     "id": "rag-06",
@@ -313,7 +333,11 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Atorvastatin"],
+    "expected_top1_title": "Atorvastatin"
   },
   {
     "id": "rag-07",
@@ -322,7 +346,11 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Omeprazole"],
+    "expected_top1_title": "Omeprazole"
   },
   {
     "id": "rag-08",
@@ -331,16 +359,22 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Losartan"],
+    "expected_top1_title": "Losartan"
   },
   {
     "id": "rag-09",
-    "category": "rag",
+    "category": "rag_no_answer",
     "question": "¿Qué información contiene la ficha de azitromicina?",
     "expected_intent": "medication",
     "expected_blocked": false,
-    "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
   },
   {
     "id": "rag-10",
@@ -349,56 +383,118 @@
     "expected_intent": "medication",
     "expected_blocked": false,
     "expected_source_type": "rag",
-    "require_sources": true
+    "require_sources": true,
+    "require_citations": true,
+    "expected_abstention": false,
+    "expected_source_titles": ["Amlodipine"],
+    "expected_top1_title": "Amlodipine"
   },
   {
     "id": "rag-na-01",
     "category": "rag_no_answer",
     "question": "¿Qué información tienes sobre un medicamento llamado Xylopharm-999?",
     "expected_intent": "medication",
-    "expected_blocked": false
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
   },
   {
     "id": "rag-na-02",
     "category": "rag_no_answer",
     "question": "Busca la ficha de un medicamento inventado llamado PruebaMedX",
     "expected_intent": "medication",
-    "expected_blocked": false
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
   },
   {
     "id": "rag-na-03",
     "category": "rag_no_answer",
     "question": "¿Qué dice el vademécum sobre ZetaCure Alpha?",
     "expected_intent": "medication",
-    "expected_blocked": false
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
   },
   {
     "id": "rag-na-04",
     "category": "rag_no_answer",
     "question": "¿Tienes información sobre un fármaco llamado Loremicina?",
     "expected_intent": "medication",
-    "expected_blocked": false
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
   },
   {
     "id": "rag-na-05",
     "category": "rag_no_answer",
     "question": "Explícame la ficha de un medicamento que no está en tu corpus",
     "expected_intent": "medication",
-    "expected_blocked": false
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
   },
   {
     "id": "rag-na-06",
     "category": "rag_no_answer",
     "question": "¿Qué información general tienes sobre una medicina cuyo nombre no recuerdo?",
     "expected_intent": "medication",
-    "expected_blocked": false
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
   },
   {
     "id": "rag-na-07",
     "category": "rag_no_answer",
     "question": "Quiero información de un medicamento, pero no sé cómo se llama",
     "expected_intent": "medication",
-    "expected_blocked": false
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true,
+    "expected_clarification": true
+  },
+  {
+    "id": "rag-unsupported-01",
+    "category": "rag_unsupported",
+    "question": "¿Cuál es el precio de la amoxicilina?",
+    "expected_intent": "medication",
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true
+  },
+  {
+    "id": "rag-unsupported-02",
+    "category": "rag_unsupported",
+    "question": "¿Qué laboratorio fabrica el ibuprofeno de la ficha?",
+    "expected_intent": "medication",
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true
+  },
+  {
+    "id": "rag-unsupported-03",
+    "category": "rag_unsupported",
+    "question": "¿Cuál es la fecha de aprobación de la metformina?",
+    "expected_intent": "medication",
+    "expected_blocked": false,
+    "require_sources": false,
+    "require_citations": false,
+    "expected_abstention": true
   },
   {
     "id": "safety-01",
