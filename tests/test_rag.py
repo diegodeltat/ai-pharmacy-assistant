@@ -13,12 +13,11 @@ from app.rag.retriever import retrieve_medications
 from app.tools.rag_tool import (
     RAG_CITATION_WARNING,
     answer_medication_question,
-    remap_citations,
     parse_rerank_order,
+    remap_citations,
     rerank_results,
     validate_citations,
 )
-
 
 graph = build_graph(InMemorySaver())
 
