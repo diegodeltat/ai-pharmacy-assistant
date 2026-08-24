@@ -8,3 +8,7 @@ __pycache__/
 .github/
 .DS_Store
 *.log
+.venv-old/
+.venv-win/
+data/memory/
+evaluation/evaluation_results*.json
