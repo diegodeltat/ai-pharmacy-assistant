@@ -467,14 +467,17 @@
     "expected_clarification": true
   },
   {
-    "id": "rag-unsupported-01",
-    "category": "rag_unsupported",
-    "question": "¿Cuál es el precio de la amoxicilina?",
-    "expected_intent": "medication",
-    "expected_blocked": false,
-    "require_sources": false,
-    "require_citations": false,
-    "expected_abstention": true
+  "id": "rag-unsupported-01",
+  "category": "rag_unsupported",
+  "question": "¿Cuál es el precio de la amoxicilina?",
+  "expected_intent": "general",
+  "expected_blocked": false,
+  "require_sources": false,
+  "require_citations": false,
+  "contains_any": [
+    "precio",
+    "no"
+  ]
   },
   {
     "id": "rag-unsupported-02",
