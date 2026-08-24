@@ -1,8 +1,13 @@
 import asyncio
 from pathlib import Path
 
-from app.agent.graph import graph
+from langgraph.checkpoint.memory import InMemorySaver
+
+from app.agent.graph import build_graph
 from app.rag.ingestion import build_documents, load_dataset
+
+
+graph = build_graph(InMemorySaver())
 
 
 def invoke_graph(question: str, user_id: str = "test-rag") -> dict:

@@ -49,4 +49,4 @@ La evaluación end-to-end requiere que la API esté ejecutándose.
 - MINSAL no informa stock, precio ni disponibilidad de medicamentos.
 - El corpus RAG es ficticio y solo sirve para fines educativos.
 - El asistente no diagnostica, prescribe ni recomienda medicamentos o dosis.
-- La memoria actual vive en el proceso y se pierde al reiniciar.
+- La memoria conversacional utiliza un checkpointer persistente basado en SQLite, asociado a `thread_id=user_id`, permitiendo conservar el contexto entre solicitudes y reinicios del servicio.

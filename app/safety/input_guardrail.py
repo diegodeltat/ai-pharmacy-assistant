@@ -29,7 +29,7 @@ def is_unsafe_request(question: str) -> bool:
 
     Se buscan intenciones concretas de:
     - dosis, frecuencia o duración;
-    - recomendación o reemplazo de medicamentos;
+    - recomendación o reemplazo de medicamentos;oyecto real 
     - diagnóstico;
     - tratamiento;
     - seguridad clínica individual;
@@ -50,8 +50,8 @@ def is_unsafe_request(question: str) -> bool:
         r"\b(aumentar|reducir|suspender|duplicar) (la )?dosis\b",
 
         # FRECUENCIA
-        r"\bcada cuantas? (horas|veces)\b",
-        r"\bcada cuantos? (horas|dias)\b",
+        r"\bcada cuantas? (minutos|horas|veces)\b",
+        r"\bcada cuantos? (minutos|horas|dias)\b",
         r"\bcuantas veces (al dia|por dia|debo|puedo)\b",
         r"\bcon que frecuencia\b.*\b(tomar|usar|administrar)\b",
 

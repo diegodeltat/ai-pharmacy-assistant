@@ -40,8 +40,10 @@ limitación y citan el medicamento y los IDs de los registros recuperados.
 ## Privacidad
 
 El contrato usa un UUID de sesión y no solicita nombre, RUT, correo ni historia
-clínica. `InMemorySaver` mantiene contexto temporal dentro del proceso. La
-memoria se pierde al reiniciar y no constituye almacenamiento durable. No se
+clínica. La memoria conversacional se gestiona mediante un checkpointer persistente basado
+en SQLite. Cada conversación utiliza `thread_id=user_id`, lo que permite recuperar
+el estado asociado al usuario entre solicitudes y conservarlo después de reiniciar
+el servicio. No se
 deben ingresar datos personales o sensibles en las preguntas.
 
 ## Evaluación

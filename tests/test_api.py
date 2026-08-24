@@ -3,11 +3,9 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 
-client = TestClient(app)
-
-
 def test_health_endpoint():
-    response = client.get("/health")
+    with TestClient(app) as client:
+        response = client.get("/health")
 
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
@@ -15,13 +13,14 @@ def test_health_endpoint():
 
 
 def test_chat_general_request():
-    response = client.post(
-        "/chat",
-        json={
-            "user_id": "test-user",
-            "pregunta": "Hola, ¿qué puedes hacer?",
-        },
-    )
+    with TestClient(app) as client:
+        response = client.post(
+            "/chat",
+            json={
+                "user_id": "test-user-general",
+                "pregunta": "Hola, ¿qué puedes hacer?",
+            },
+        )
 
     body = response.json()
 
@@ -33,13 +32,14 @@ def test_chat_general_request():
 
 
 def test_chat_safety_request():
-    response = client.post(
-        "/chat",
-        json={
-            "user_id": "test-user",
-            "pregunta": "¿Qué dosis de ibuprofeno debo tomar?",
-        },
-    )
+    with TestClient(app) as client:
+        response = client.post(
+            "/chat",
+            json={
+                "user_id": "test-user-safety",
+                "pregunta": "¿Qué dosis de ibuprofeno debo tomar?",
+            },
+        )
 
     body = response.json()
 
@@ -49,12 +49,13 @@ def test_chat_safety_request():
 
 
 def test_chat_rejects_empty_question():
-    response = client.post(
-        "/chat",
-        json={
-            "user_id": "test-user",
-            "pregunta": "",
-        },
-    )
+    with TestClient(app) as client:
+        response = client.post(
+            "/chat",
+            json={
+                "user_id": "test-user-empty",
+                "pregunta": "",
+            },
+        )
 
     assert response.status_code == 422
