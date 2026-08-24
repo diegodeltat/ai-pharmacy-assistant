@@ -6,5 +6,6 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 evaluation/evaluation_results.json
+evaluation/evaluation_results_rerank_*.json
 .streamlit/secrets.toml
 data/memory/

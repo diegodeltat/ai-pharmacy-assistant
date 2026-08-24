@@ -10,7 +10,7 @@ from pathlib import Path
 from langchain_core.documents import Document
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams
+from qdrant_client.models import Distance, PayloadSchemaType, VectorParams
 
 from app.config import get_settings
 from app.rag.vector_store import build_embedding_model
@@ -193,6 +193,41 @@ def generate_document_ids(documents: list[Document]) -> list[str]:
     ]
 
 
+def ensure_payload_indexes(
+    client: QdrantClient,
+    collection_name: str,
+) -> None:
+    """Crea índices requeridos por filtros en clusters con strict mode."""
+
+    client.create_payload_index(
+        collection_name=collection_name,
+        field_name="metadata.drug_name",
+        field_schema=PayloadSchemaType.KEYWORD,
+        wait=True,
+    )
+
+
+def index_payloads_only() -> None:
+    """Repara índices de payload sin recalcular embeddings ni subir documentos."""
+
+    settings = get_settings()
+    if not settings.rag_configured:
+        raise RuntimeError(
+            "Faltan OPENAI_API_KEY, QDRANT_URL o QDRANT_API_KEY."
+        )
+
+    client = QdrantClient(
+        url=settings.qdrant_url,
+        api_key=settings.qdrant_api_key,
+        timeout=60,
+    )
+    if not client.collection_exists(settings.qdrant_collection):
+        raise RuntimeError(
+            f"La colección {settings.qdrant_collection!r} no existe."
+        )
+    ensure_payload_indexes(client, settings.qdrant_collection)
+
+
 def index_documents(documents: list[Document], recreate: bool = False) -> int:
     settings = get_settings()
     if not settings.rag_configured:
@@ -228,6 +263,8 @@ def index_documents(documents: list[Document], recreate: bool = False) -> int:
                 "Usa --recreate para reemplazarla conscientemente."
             )
 
+    ensure_payload_indexes(client, settings.qdrant_collection)
+
     store = QdrantVectorStore(
         client=client,
         collection_name=settings.qdrant_collection,
@@ -246,7 +283,17 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Indexa DrugData.csv en Qdrant")
     parser.add_argument("--recreate", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--indexes-only",
+        action="store_true",
+        help="Crea índices de payload sin recalcular embeddings.",
+    )
     args = parser.parse_args()
+
+    if args.indexes_only:
+        index_payloads_only()
+        print("Índices de payload verificados.")
+        return
 
     settings = get_settings()
     rows = load_dataset(settings.dataset_path)

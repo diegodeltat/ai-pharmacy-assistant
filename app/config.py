@@ -26,6 +26,13 @@ def _as_int(name: str, default: int) -> int:
         return default
 
 
+def _as_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().casefold() in {"1", "true", "yes", "on", "si", "sí"}
+
+
 @dataclass(frozen=True)
 class Settings:
     openai_api_key: str | None
@@ -37,6 +44,7 @@ class Settings:
     embedding_dimensions: int
     rag_top_k: int
     rag_score_threshold: float
+    rag_rerank_enabled: bool
     minsal_timeout_seconds: float
     minsal_cache_seconds: int
     minsal_fallback_path: Path
@@ -70,6 +78,7 @@ def get_settings() -> Settings:
         embedding_dimensions=_as_int("EMBEDDING_DIMENSIONS", 256),
         rag_top_k=_as_int("RAG_TOP_K", 4),
         rag_score_threshold=_as_float("RAG_SCORE_THRESHOLD", 0.45),
+        rag_rerank_enabled=_as_bool("RAG_RERANK_ENABLED", False),
         minsal_timeout_seconds=_as_float("MINSAL_TIMEOUT_SECONDS", 5.0),
         minsal_cache_seconds=_as_int("MINSAL_CACHE_SECONDS", 900),
         minsal_fallback_path=Path(

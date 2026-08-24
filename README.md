@@ -23,6 +23,12 @@ python -m app.rag.ingestion
 ```
 
 Usa `--recreate` solamente para reemplazar la colección completa.
+Si la colección ya existía y solo necesita los índices de metadata requeridos
+por Qdrant strict mode, ejecuta:
+
+```powershell
+python -m app.rag.ingestion --indexes-only
+```
 
 ## Ejecutar
 
@@ -40,9 +46,24 @@ streamlit run frontend/app.py
 ```powershell
 python -m pytest -q
 python -m evaluation.evaluate
+python -m evaluation.calibrate_rag
 ```
 
-La evaluación end-to-end requiere que la API esté ejecutándose.
+La evaluación end-to-end requiere que la API esté ejecutándose. La calibración
+requiere OpenAI y Qdrant configurados y guarda scores, Hit@1 y abstención para
+cada combinación de threshold y `top_k`.
+
+Para comparar evaluación sin y con reranking:
+
+```powershell
+python -m evaluation.evaluate --rerank false
+python -m evaluation.evaluate --rerank true
+```
+
+`--rerank` sin valor también lo activa. Los resultados se guardan por separado
+en `evaluation_results_rerank_off.json` y `evaluation_results_rerank_on.json`.
+El reranking usa el modelo configurado, por lo que agrega costo y latencia. Cada
+resultado registra `latency_ms` y el resumen muestra p50 y p95.
 
 ## Límites
 

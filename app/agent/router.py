@@ -1,10 +1,8 @@
 """Clasificación determinística de intenciones y extracción de comuna."""
 
-import csv
 import re
-from functools import lru_cache
 
-from app.config import get_settings
+from app.rag.entity_resolver import resolve_medication_entity
 from app.safety.input_guardrail import is_unsafe_request, normalize_for_safety
 
 
@@ -48,22 +46,6 @@ OUT_OF_SCOPE_COMMERCIAL_WORDS = (
 )
 
 
-@lru_cache(maxsize=1)
-def known_drug_names() -> set[str]:
-    path = get_settings().dataset_path
-    if not path.exists():
-        return set()
-    try:
-        with path.open("r", encoding="utf-8-sig", newline="") as file:
-            return {
-                normalize_for_safety(row.get("Drug Name", ""))
-                for row in csv.DictReader(file)
-                if row.get("Drug Name")
-            }
-    except (OSError, csv.Error):
-        return set()
-
-
 def classify_intent(question: str) -> str:
     if is_unsafe_request(question):
         return "safety"
@@ -73,9 +55,9 @@ def classify_intent(question: str) -> str:
     if any(word in text for word in OUT_OF_SCOPE_COMMERCIAL_WORDS):
         return "general"
     pharmacy = any(word in text for word in PHARMACY_WORDS)
-    medication = any(word in text for word in MEDICATION_WORDS) or any(
-        re.search(rf"\b{re.escape(name)}\b", text)
-        for name in known_drug_names()
+    medication = (
+        any(word in text for word in MEDICATION_WORDS)
+        or resolve_medication_entity(question) is not None
     )
     if pharmacy and medication:
         return "mixed"

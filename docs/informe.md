@@ -34,8 +34,10 @@ limitación y citan el medicamento y los IDs de los registros recuperados.
    recomendaciones, roleplay e instrucciones para ignorar reglas.
 3. LangGraph enruta a MINSAL, RAG, ambas herramientas o rechazo.
 4. El prompt limita al LLM al contexto recuperado y exige abstención.
-5. El guardrail de salida reemplaza instrucciones de dosis accidentales.
-6. La interfaz muestra fuentes, estado vivo/respaldo y advertencias.
+5. Una compuerta de entidad evita recuperar fichas para nombres desconocidos.
+6. Las citas se validan y solo se muestran las fuentes realmente citadas.
+7. El guardrail de salida reemplaza instrucciones de dosis accidentales.
+8. La interfaz muestra fuentes, estado vivo/respaldo y advertencias.
 
 ## Privacidad
 
@@ -52,6 +54,8 @@ deben ingresar datos personales o sensibles en las preguntas.
 - Pruebas de API para salud, validación y seguridad.
 - Veinte solicitudes adversarias para el guardrail.
 - Casos end-to-end en `evaluation/evaluation_cases.json`.
+- Casos RAG que verifican top 1, título esperado, citas, abstención y aclaración.
+- Script reproducible para comparar threshold y `top_k` con Qdrant real.
 - La demo debe verificar dos turnos dependientes con el mismo `user_id`.
 
 ## Limitaciones
@@ -59,5 +63,5 @@ deben ingresar datos personales o sensibles en las preguntas.
 - El corpus no tiene autoridad clínica y está en inglés.
 - La memoria no persiste entre reinicios o instancias de Render.
 - La calidad y disponibilidad de MINSAL dependen de un servicio externo.
-- El umbral semántico debe revisarse con los casos de evaluación antes de la
-  demo definitiva.
+- La calibración real del umbral requiere credenciales de OpenAI/Qdrant y debe
+  ejecutarse antes de la demo definitiva.
