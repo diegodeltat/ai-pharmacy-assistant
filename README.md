@@ -15,6 +15,15 @@ Copy-Item .env.example .env
 
 Completa en `.env` `OPENAI_API_KEY`, `QDRANT_URL` y `QDRANT_API_KEY`.
 
+### macOS / Linux
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+cp .env.example .env
+```
+
 ## Preparar el RAG
 
 ```powershell
@@ -71,3 +80,27 @@ resultado registra `latency_ms` y el resumen muestra p50 y p95.
 - El corpus RAG es ficticio y solo sirve para fines educativos.
 - El asistente no diagnostica, prescribe ni recomienda medicamentos o dosis.
 - La memoria conversacional utiliza un checkpointer persistente basado en SQLite, asociado a `thread_id=user_id`, permitiendo conservar el contexto entre solicitudes y reinicios del servicio.
+
+## Despliegue
+
+La aplicación se encuentra desplegada en Railway utilizando dos servicios independientes:
+
+- **Backend:** FastAPI.
+- **Frontend:** Streamlit.
+
+El backend se integra con OpenAI, Qdrant y MINSAL mediante variables de entorno. La memoria conversacional utiliza SQLite con almacenamiento persistente en cloud.
+
+El frontend consume la API del backend mediante la variable `API_BASE_URL`.
+
+El despliegue fue validado mediante smoke tests end-to-end sobre los flujos críticos de RAG, farmacias de turno, memoria conversacional y seguridad.
+
+## Resultados finales
+
+- **52/52 pruebas automatizadas aprobadas** con Pytest.
+- **73/73 escenarios aprobados** en la evaluación end-to-end.
+- RAG validado en cloud con recuperación desde Qdrant, generación mediante OpenAI y citas verificables.
+- Integración MINSAL con mecanismo de fallback explícito cuando los datos en vivo no están disponibles.
+- Guardrails para consultas fuera del alcance clínico, como diagnóstico y recomendación de dosis.
+- Memoria conversacional persistente.
+- Frontend y backend desplegados y validados en Railway.
+- Trazabilidad de las interacciones con el LLM mediante logging de operación, modelo, latencia y estado de ejecución.

@@ -60,8 +60,7 @@ deben ingresar datos personales o sensibles en las preguntas.
 
 ## Limitaciones
 
-- El corpus no tiene autoridad clínica y está en inglés.
-- La memoria no persiste entre reinicios o instancias de Render.
-- La calidad y disponibilidad de MINSAL dependen de un servicio externo.
-- La calibración real del umbral requiere credenciales de OpenAI/Qdrant y debe
-  ejecutarse antes de la demo definitiva.
+- El corpus utilizado para el RAG es educativo, no tiene autoridad clínica y contiene información principalmente en inglés.
+- La memoria conversacional utiliza SQLite persistente; en cloud su persistencia depende de que el servicio disponga de almacenamiento persistente correctamente configurado.
+- La calidad, disponibilidad y vigencia de los datos de farmacias dependen del servicio externo de MINSAL. Ante una falla, el sistema utiliza un fallback local e informa explícitamente que los datos no son en vivo.
+- La calidad del retrieval depende del corpus, los embeddings y la configuración de búsqueda. La calibración debe repetirse si cambian estos componentes o sus parámetros.
