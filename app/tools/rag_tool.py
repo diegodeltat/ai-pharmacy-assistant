@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 import re
+import time
 from functools import lru_cache
 
 from langchain_openai import ChatOpenAI
@@ -16,7 +17,7 @@ from app.rag.vector_store import ensure_rag_configuration
 from app.safety.output_guardrail import apply_output_guardrail
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("uvicorn.error")
 
 
 RAG_WARNING = (
@@ -186,15 +187,43 @@ async def rerank_results(question: str, results: list) -> tuple[list, bool]:
         f"[{index}] {result.title}\n{result.content[:2000]}"
         for index, result in enumerate(results, start=1)
     )
-    response = await get_llm().ainvoke(
-        [
-            {"role": "system", "content": RERANK_SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": f"Pregunta:\n{question}\n\nFuentes:\n{candidates}",
-            },
-        ]
-    )
+
+    settings = get_settings()
+    start = time.perf_counter()
+
+    try:
+        response = await get_llm().ainvoke(
+            [
+                {"role": "system", "content": RERANK_SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": f"Pregunta:\n{question}\n\nFuentes:\n{candidates}",
+                },
+            ]
+        )
+
+        latency_ms = (time.perf_counter() - start) * 1000
+
+        logger.info(
+            "llm_call operation=rag_rerank model=%s "
+            "latency_ms=%.1f success=true candidates=%d",
+            settings.chat_model,
+            latency_ms,
+            len(results),
+        )
+
+    except Exception:
+        latency_ms = (time.perf_counter() - start) * 1000
+
+        logger.exception(
+            "llm_call operation=rag_rerank model=%s "
+            "latency_ms=%.1f success=false candidates=%d",
+            settings.chat_model,
+            latency_ms,
+            len(results),
+        )
+        raise
+
     order = parse_rerank_order(str(response.content), len(results))
     return [results[index - 1] for index in order], True
 
@@ -207,8 +236,33 @@ async def _generate_answer(prompt: str, correction: str = "") -> str:
             "content": f"{prompt}\n\n{correction}".strip(),
         },
     ]
-    response = await get_llm().ainvoke(messages)
-    return str(response.content)
+
+    settings = get_settings()
+    start = time.perf_counter()
+
+    try:
+        response = await get_llm().ainvoke(messages)
+        latency_ms = (time.perf_counter() - start) * 1000
+
+        logger.info(
+            "llm_call operation=rag_generation model=%s "
+            "latency_ms=%.1f success=true",
+            settings.chat_model,
+            latency_ms,
+        )
+
+        return str(response.content)
+
+    except Exception:
+        latency_ms = (time.perf_counter() - start) * 1000
+
+        logger.exception(
+            "llm_call operation=rag_generation model=%s "
+            "latency_ms=%.1f success=false",
+            settings.chat_model,
+            latency_ms,
+        )
+        raise
 
 
 async def answer_medication_question(
